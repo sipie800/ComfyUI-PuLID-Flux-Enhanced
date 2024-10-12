@@ -16,3 +16,7 @@ a novel very fast embeddings self-training methods...etc
 
 ### switch between using gray image (official) and rgb.
 in some cases, using gray image will bring detail loss
+
+![2024-10-12_204047](https://github.com/user-attachments/assets/0ae96170-2eff-44e9-a53a-6a7447dbc0f1)
+
+
