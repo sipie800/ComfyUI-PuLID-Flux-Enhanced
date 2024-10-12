@@ -1,6 +1,8 @@
 # ComfyUI-PuLID-Flux-Enhanced
 adapted from https://github.com/balazik/ComfyUI-PuLID-Flux
 
+workflow: see example flux_pulid_multi.json
+
 ## new features
 ### common fusion methods for multi-image input
 mean(official), concat, max...etc
