@@ -408,7 +408,7 @@ class ApplyPulidFlux:
             if cond.shape[0] > 1:
                 if train_step > 0:
                     with torch.inference_mode(False): # 🤢 what are you doing comfy?
-                        cond = online_train(cond, device="cuda:1", step=train_step)
+                        cond = online_train(cond, device=device, step=train_step)
                 else:
                     cond = torch.mean(cond, dim=0, keepdim=True)
 
