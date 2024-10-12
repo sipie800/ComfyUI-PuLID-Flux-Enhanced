@@ -13,4 +13,4 @@ using the max norm token among images
 a novel very fast embeddings self-training methods...etc
 
 ### switch between using gray image (official) and rgb.
-in some cases, use gray image will bring detail loss
+in some cases, using gray image will bring detail loss
