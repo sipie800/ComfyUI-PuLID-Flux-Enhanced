@@ -12,7 +12,7 @@ using the norm of the conditions to weight them
 
 using the max norm token among images
 
-a novel very fast embeddings self-training methods(explained here: https://github.com/balazik/ComfyUI-PuLID-Flux/issues/28)...etc
+a novel very fast embeddings self-training methods(explained here: https://github.com/balazik/ComfyUI-PuLID-Flux/issues/28)
 
 ### switch between using gray image (official) and rgb.
 in some cases, using gray image will bring detail loss
