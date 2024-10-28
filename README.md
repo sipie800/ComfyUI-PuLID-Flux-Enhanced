@@ -3,7 +3,7 @@ adapted from https://github.com/balazik/ComfyUI-PuLID-Flux
 
 workflow: see example flux_pulid_multi.json
 
-### update oct.28 2024
+## update oct.28 2024
 Add an optional prior image input for the node. When using the train_weight method, the prior image will act as the main id image, which will lead the other id images to sum up to an optimized id embedding.
 
 This prior was randomly choosen previously, now we can assign it.
