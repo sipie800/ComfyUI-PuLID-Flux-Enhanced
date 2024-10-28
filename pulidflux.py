@@ -12,6 +12,8 @@ from insightface.app import FaceAnalysis
 from facexlib.parsing import init_parsing_model
 from facexlib.utils.face_restoration_helper import FaceRestoreHelper
 
+import torch.nn.functional as F
+
 from .eva_clip.constants import OPENAI_DATASET_MEAN, OPENAI_DATASET_STD
 from .encoders_flux import IDFormer, PerceiverAttentionCA
 
@@ -150,6 +152,29 @@ def image_to_tensor(image):
     tensor = tensor[..., [2, 1, 0]]
     return tensor
 
+def resize_with_pad(img, target_size): # image: 1, h, w, 3
+    img = img.permute(0, 3, 1, 2)
+    H, W = target_size
+    
+    h, w = img.shape[2], img.shape[3]
+    scale_h = H / h
+    scale_w = W / w
+    scale = min(scale_h, scale_w)
+
+    new_h = int(min(h * scale,H))
+    new_w = int(min(w * scale,W))
+    new_size = (new_h, new_w)
+    
+    img = F.interpolate(img, size=new_size, mode='bicubic', align_corners=False)
+    
+    pad_top = (H - new_h) // 2
+    pad_bottom = (H - new_h) - pad_top
+    pad_left = (W - new_w) // 2
+    pad_right = (W - new_w) - pad_left
+    img = F.pad(img, pad=(pad_left, pad_right, pad_top, pad_bottom), mode='constant', value=0)
+    
+    return img.permute(0, 2, 3, 1)
+
 def to_gray(img):
     x = 0.299 * img[:, 0:1] + 0.587 * img[:, 1:2] + 0.114 * img[:, 2:3]
     x = x.repeat(1, 3, 1, 1)
@@ -248,6 +273,7 @@ class ApplyPulidFlux:
             },
             "optional": {
                 "attn_mask": ("MASK", ),
+                "prior_image": ("IMAGE",), # for train weight, as the target
             },
             "hidden": {
                 "unique_id": "UNIQUE_ID"
@@ -261,7 +287,7 @@ class ApplyPulidFlux:
     def __init__(self):
         self.pulid_data_dict = None
 
-    def apply_pulid_flux(self, model, pulid_flux, eva_clip, face_analysis, image, weight, start_at, end_at, fusion="mean", fusion_weight_max=1.0, fusion_weight_min=0.0, train_step=1000, use_gray=True, attn_mask=None, unique_id=None):
+    def apply_pulid_flux(self, model, pulid_flux, eva_clip, face_analysis, image, weight, start_at, end_at, prior_image=None,fusion="mean", fusion_weight_max=1.0, fusion_weight_min=0.0, train_step=1000, use_gray=True, attn_mask=None, unique_id=None):
         device = comfy.model_management.get_torch_device()
         # Why should I care what args say, when the unet model has a different dtype?!
         # Am I missing something?!
@@ -282,6 +308,9 @@ class ApplyPulidFlux:
                 attn_mask = attn_mask.unsqueeze(0)
             attn_mask = attn_mask.to(device, dtype=dtype)
 
+        if prior_image is not None:
+            prior_image = resize_with_pad(prior_image.to(image.device, dtype=image.dtype), target_size=(image.shape[1], image.shape[2]))
+            image=torch.cat((prior_image,image),dim=0)
         image = tensor_to_image(image)
 
         face_helper = FaceRestoreHelper(
@@ -408,7 +437,7 @@ class ApplyPulidFlux:
             if cond.shape[0] > 1:
                 if train_step > 0:
                     with torch.inference_mode(False): # 🤢 what are you doing comfy?
-                        cond = online_train(cond, device=device, step=train_step)
+                        cond = online_train(cond, device="cuda:1", step=train_step)
                 else:
                     cond = torch.mean(cond, dim=0, keepdim=True)
 
