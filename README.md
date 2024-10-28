@@ -8,6 +8,8 @@ Add an optional prior image input for the node. When using the train_weight meth
 
 This prior was randomly choosen previously, now we can assign it.
 
+Leaving the prior image input empty is OK just as previous.
+
 Please choose the best id image in your mind as the prior, or just experiment around and see what happens.
 ![oct28](https://github.com/user-attachments/assets/6a481cd9-2836-4f6f-9ad5-7458356c332a)
 
