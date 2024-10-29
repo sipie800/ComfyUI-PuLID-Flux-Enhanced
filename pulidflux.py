@@ -414,7 +414,7 @@ class ApplyPulidFlux:
                 norm=torch.norm(cond,dim=(1,2))
                 norm=norm/torch.sum(norm)
                 cond=torch.einsum("wij,w->ij",cond,norm).unsqueeze(0)
-        elif fusion == "max_token": # 🤔
+        elif fusion == "max_token":
             cond = torch.cat(cond).to(device, dtype=dtype)
             if cond.shape[0] > 1:
                 norm=torch.norm(cond,dim=2)
@@ -432,11 +432,11 @@ class ApplyPulidFlux:
                     o=order[:,i]
                     _cond.append(torch.einsum('ij,i->j',cond[:,i,:],regular_weight[o]))
                 cond=torch.stack(_cond,dim=0).unsqueeze(0)
-        elif fusion == "train_weight": # 🤔
+        elif fusion == "train_weight":
             cond = torch.cat(cond).to(device, dtype=dtype)
             if cond.shape[0] > 1:
                 if train_step > 0:
-                    with torch.inference_mode(False): # 🤢 what are you doing comfy?
+                    with torch.inference_mode(False):
                         cond = online_train(cond, device=cond.device, step=train_step)
                 else:
                     cond = torch.mean(cond, dim=0, keepdim=True)
