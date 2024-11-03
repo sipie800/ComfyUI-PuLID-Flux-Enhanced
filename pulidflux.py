@@ -268,7 +268,7 @@ class ApplyPulidFlux:
                 "fusion": (["mean","concat","max","norm_id","max_token","auto_weight","train_weight"],),
                 "fusion_weight_max": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 20.0, "step": 0.1 }),
                 "fusion_weight_min": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 20.0, "step": 0.1 }),
-                "train_step": ("INT", {"default": 3000, "min": 0, "max": 20000, "step": 1 }),
+                "train_step": ("INT", {"default": 1000, "min": 0, "max": 20000, "step": 1 }),
                 "use_gray": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
             },
             "optional": {
