@@ -31,8 +31,8 @@ in some cases, using gray image will bring detail loss
 
 ## tricks make your generation better
 ### fusion method leverages many id images to enhance fidelity
-1. besides mean fusion, you can try max or max_token, which can boost some major feature of a face (like large eyes, special nose or sth), it can go distortion beyond fidelity.
-2. with train_weight method, you can try train with less than 2000 steps to make a deeper fusion than the non-training methods. too many training steps will make the result just like the prior image.
+1. Besides mean fusion, you can try max or max_token, which can boost some major feature of a face (like large eyes, special nose or sth). it can go distortion beyond fidelity though.
+2. With train_weight method, you can try train with less than 2000 steps to make a deeper fusion than the non-training methods. too many training steps will make the result just like the prior image.
 
 ### additional notes
 1. Flux is a high capacity base model, it even can cognize the input image in some super human way. 
