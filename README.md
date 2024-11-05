@@ -29,8 +29,20 @@ in some cases, using gray image will bring detail loss
 
 ![2024-10-12_204047](https://github.com/user-attachments/assets/0ae96170-2eff-44e9-a53a-6a7447dbc0f1)
 
+## tricks make your generation better
+### fusion method leverages many id images to enhance fidelity
+1. besides mean fusion, you can try max or max_token, which can boost some major feature of a face (like large eyes, special nose or sth), it can go distortion beyond fidelity.
+2. with train_weight method, you can try train with less than 2000 steps to make a deeper fusion than the non-training methods. too many training steps will make the result just like the prior image.
 
-## note for common users.
+### additional notes
+1. Flux is a high capacity base model, it even can cognize the input image in some super human way. 
+for example, you can resize your high quality input image with lanczos method rather than nearest area or billinear. you get finer texture. Keep in mind that taking care of your input image is the thing when the base model is strong.
+2. The best pulid weight is around 0.8-0.95 for flux pulid 0.9.0. 1.0 is not good. For 0.9.1, it's higher towards around 0.9-1.0. Nonetheless the 0.9.1 is not always better than 0.9.0.
+3. The base model is flux-dev or its finetuning, and the precision does mean the thing. fp16 should always be sound. fp8 is OK. I won't recommend gguf or nf4 things.
+4. Some of the finetuned flux dev model may have strong bias. for example, it may sway the faces to a certain human race.
+5. Euler simple is always working. Euler beta give you higher quality especially if your input image is somewhat low quality.
+
+## basic notes for common users
 This is an experimental node. It can give enhanced result but I'm not promising basic instructions for users who barely know about python developing or AI developing.
 
 Please follow the comfyui instructions or https://github.com/balazik/ComfyUI-PuLID-Flux to enable usage.
