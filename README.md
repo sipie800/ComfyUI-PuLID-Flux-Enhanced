@@ -32,5 +32,7 @@ in some cases, using gray image will bring detail loss
 
 ## note for common users.
 This is an experimental node. It can give enhanced result but I'm not promising basic instructions for users who barely know about python developing or AI developing.
+
 Please follow the comfyui instructions or https://github.com/balazik/ComfyUI-PuLID-Flux to enable usage.
-If you are just using SDXL pulid, you can use https://github.com/cubiq/PuLID_ComfyUI.
+
+If you are just using SDXL pulid, you can use https://github.com/cubiq/PuLID_ComfyUI. Some of the installation instructions there may also help.
