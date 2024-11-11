@@ -110,7 +110,7 @@ def forward_orig(
             if i % self.pulid_double_interval == 0:
                 # Will calculate influence of all pulid nodes at once
                 for _, node_data in self.pulid_data.items():
-                    if node_data['sigma_start'] >= timesteps >= node_data['sigma_end']:
+                    if node_data['sigma_start'] >= timesteps[0] >= node_data['sigma_end']:
                         img = img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], img)
                 ca_idx += 1
 
@@ -132,7 +132,7 @@ def forward_orig(
             if i % self.pulid_single_interval == 0:
                 # Will calculate influence of all nodes at once
                 for _, node_data in self.pulid_data.items():
-                    if node_data['sigma_start'] >= timesteps >= node_data['sigma_end']:
+                    if node_data['sigma_start'] >= timesteps[0] >= node_data['sigma_end']:
                         real_img = real_img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], real_img)
                 ca_idx += 1
             img = torch.cat((txt, real_img), 1)
