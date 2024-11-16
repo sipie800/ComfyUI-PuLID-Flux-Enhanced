@@ -76,7 +76,10 @@ def forward_orig(
     y: Tensor,
     guidance: Tensor = None,
     control=None,
+    transformer_options={}
 ) -> Tensor:
+    patches_replace = transformer_options.get("patches_replace", {})
+
     if img.ndim != 3 or txt.ndim != 3:
         raise ValueError("Input img and txt tensors must have 3 dimensions.")
 
@@ -95,8 +98,22 @@ def forward_orig(
     pe = self.pe_embedder(ids)
 
     ca_idx = 0
+    blocks_replace = patches_replace.get("dit", {})
+
     for i, block in enumerate(self.double_blocks):
-        img, txt = block(img=img, txt=txt, vec=vec, pe=pe)
+        if ("double_block", i) in blocks_replace:
+            def block_wrap(args):
+                out = {}
+                out["img"], out["txt"] = block(
+                    img=args["img"], txt=args["txt"], vec=args["vec"], pe=args["pe"])
+                return out
+
+            out = blocks_replace[("double_block", i)](
+                {"img": img, "txt": txt, "vec": vec, "pe": pe}, {"original_block": block_wrap})
+            txt = out["txt"]
+            img = out["img"]
+        else:
+            img, txt = block(img=img, txt=txt, vec=vec, pe=pe)
 
         if control is not None: # Controlnet
             control_i = control.get("input")
