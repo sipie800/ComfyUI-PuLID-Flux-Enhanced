@@ -127,7 +127,12 @@ def forward_orig(
             if i % self.pulid_double_interval == 0:
                 # Will calculate influence of all pulid nodes at once
                 for _, node_data in self.pulid_data.items():
-                    if node_data['sigma_start'] >= timesteps >= node_data['sigma_end']:
+                    condition_start = node_data['sigma_start'] >= timesteps
+                    condition_end = timesteps >= node_data['sigma_end']
+                    condition = torch.logical_and(
+                        condition_start, condition_end).all()
+                    
+                    if condition:
                         img = img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], img)
                 ca_idx += 1
 
