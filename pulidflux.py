@@ -148,13 +148,20 @@ def forward_orig(
                 if add is not None:
                     img[:, txt.shape[1] :, ...] += add
 
+
         # PuLID attention
         if self.pulid_data:
             real_img, txt = img[:, txt.shape[1]:, ...], img[:, :txt.shape[1], ...]
             if i % self.pulid_single_interval == 0:
                 # Will calculate influence of all nodes at once
                 for _, node_data in self.pulid_data.items():
-                    if node_data['sigma_start'] >= timesteps >= node_data['sigma_end']:
+                    condition_start = node_data['sigma_start'] >= timesteps
+                    condition_end = timesteps >= node_data['sigma_end']
+
+                    # Combine conditions and reduce to a single boolean
+                    condition = torch.logical_and(condition_start, condition_end).all()
+
+                    if condition:
                         real_img = real_img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], real_img)
                 ca_idx += 1
             img = torch.cat((txt, real_img), 1)
