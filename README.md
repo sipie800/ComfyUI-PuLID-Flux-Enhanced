@@ -41,6 +41,7 @@ for example, you can resize your high quality input image with lanczos method ra
 3. The base model is flux-dev or its finetuning, and the precision does mean the thing. fp16 should always be sound. fp8 is OK. I won't recommend gguf or nf4 things.
 4. Some of the finetuned flux dev model may have strong bias. for example, it may sway the faces to a certain human race.
 5. Euler simple is always working. Euler beta give you higher quality especially if your input image is somewhat low quality.
+6. If you wanna use 3rd party flux-d weight, better to use a merged one or with a lora weight, rather than a finetuned one. Full finetuning can hurt the connection between pulid and original flux-d base model. You can test by yourself though. 
 
 ## basic notes for common users
 This is an experimental node. It can give enhanced result but I'm not promising basic instructions for users who barely know about python developing or AI developing.
