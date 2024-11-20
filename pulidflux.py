@@ -110,7 +110,7 @@ def forward_orig(
             if i % self.pulid_double_interval == 0:
                 # Will calculate influence of all pulid nodes at once
                 for _, node_data in self.pulid_data.items():
-                    if node_data['sigma_start'] >= timesteps >= node_data['sigma_end']:
+                    if node_data['sigma_start'] >= timesteps[0] >= node_data['sigma_end']:
                         img = img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], img)
                 ca_idx += 1
 
@@ -132,7 +132,7 @@ def forward_orig(
             if i % self.pulid_single_interval == 0:
                 # Will calculate influence of all nodes at once
                 for _, node_data in self.pulid_data.items():
-                    if node_data['sigma_start'] >= timesteps >= node_data['sigma_end']:
+                    if node_data['sigma_start'] >= timesteps[0] >= node_data['sigma_end']:
                         real_img = real_img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], real_img)
                 ca_idx += 1
             img = torch.cat((txt, real_img), 1)
@@ -294,8 +294,8 @@ class ApplyPulidFlux:
         #dtype = comfy.model_management.unet_dtype()
         dtype = model.model.diffusion_model.dtype
         # For 8bit use bfloat16 (because ufunc_add_CUDA is not implemented)
-        if dtype in [torch.float8_e4m3fn, torch.float8_e5m2]:
-            dtype = torch.bfloat16
+        if model.model.manual_cast_dtype is not None:
+            dtype = model.model.manual_cast_dtype
 
         eva_clip.to(device, dtype=dtype)
         pulid_flux.to(device, dtype=dtype)
