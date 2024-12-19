@@ -76,7 +76,9 @@ def forward_orig(
     y: Tensor,
     guidance: Tensor = None,
     control=None,
-    transformer_options={}
+    transformer_options={},
+    attn_mask: Tensor = None,
+    **kwargs # so it won't break if we add more stuff in the future
 ) -> Tensor:
     patches_replace = transformer_options.get("patches_replace", {})
 
@@ -99,21 +101,31 @@ def forward_orig(
 
     ca_idx = 0
     blocks_replace = patches_replace.get("dit", {})
-
     for i, block in enumerate(self.double_blocks):
         if ("double_block", i) in blocks_replace:
             def block_wrap(args):
                 out = {}
-                out["img"], out["txt"] = block(
-                    img=args["img"], txt=args["txt"], vec=args["vec"], pe=args["pe"])
+                out["img"], out["txt"] = block(img=args["img"],
+                                               txt=args["txt"],
+                                               vec=args["vec"],
+                                               pe=args["pe"],
+                                               attn_mask=args.get("attn_mask"))
                 return out
 
-            out = blocks_replace[("double_block", i)](
-                {"img": img, "txt": txt, "vec": vec, "pe": pe}, {"original_block": block_wrap})
+            out = blocks_replace[("double_block", i)]({"img": img,
+                                                       "txt": txt,
+                                                       "vec": vec,
+                                                       "pe": pe,
+                                                       "attn_mask": attn_mask},
+                                                      {"original_block": block_wrap})
             txt = out["txt"]
             img = out["img"]
         else:
-            img, txt = block(img=img, txt=txt, vec=vec, pe=pe)
+            img, txt = block(img=img,
+                             txt=txt,
+                             vec=vec,
+                             pe=pe,
+                             attn_mask=attn_mask)
 
         if control is not None: # Controlnet
             control_i = control.get("input")
@@ -137,9 +149,24 @@ def forward_orig(
                 ca_idx += 1
 
     img = torch.cat((txt, img), 1)
-
     for i, block in enumerate(self.single_blocks):
-        img = block(img, vec=vec, pe=pe)
+        if ("single_block", i) in blocks_replace:
+            def block_wrap(args):
+                out = {}
+                out["img"] = block(args["img"],
+                                   vec=args["vec"],
+                                   pe=args["pe"],
+                                   attn_mask=args.get("attn_mask"))
+                return out
+
+            out = blocks_replace[("single_block", i)]({"img": img,
+                                                       "vec": vec,
+                                                       "pe": pe,
+                                                       "attn_mask": attn_mask}, 
+                                                      {"original_block": block_wrap})
+            img = out["img"]
+        else:
+            img = block(img, vec=vec, pe=pe, attn_mask=attn_mask)
 
         if control is not None: # Controlnet
             control_o = control.get("output")
