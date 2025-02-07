@@ -8,6 +8,7 @@ import logging
 import folder_paths
 import comfy.utils
 from comfy.ldm.flux.layers import timestep_embedding
+import comfy.model_management
 from insightface.app import FaceAnalysis
 from facexlib.parsing import init_parsing_model
 from facexlib.utils.face_restoration_helper import FaceRestoreHelper
@@ -80,6 +81,7 @@ def forward_orig(
     attn_mask: Tensor = None,
     **kwargs # so it won't break if we add more stuff in the future
 ) -> Tensor:
+    device = comfy.model_management.get_torch_device()
     patches_replace = transformer_options.get("patches_replace", {})
 
     if img.ndim != 3 or txt.ndim != 3:
@@ -145,7 +147,7 @@ def forward_orig(
                         condition_start, condition_end).all()
                     
                     if condition:
-                        img = img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], img)
+                        img = img + node_data['weight'] * self.pulid_ca[ca_idx].to(device)(node_data['embedding'], img)
                 ca_idx += 1
 
     img = torch.cat((txt, img), 1)
@@ -189,7 +191,7 @@ def forward_orig(
                     condition = torch.logical_and(condition_start, condition_end).all()
 
                     if condition:
-                        real_img = real_img + node_data['weight'] * self.pulid_ca[ca_idx](node_data['embedding'], real_img)
+                        real_img = real_img + node_data['weight'] * self.pulid_ca[ca_idx].to(device)(node_data['embedding'], real_img)
                 ca_idx += 1
             img = torch.cat((txt, real_img), 1)
 
