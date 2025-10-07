@@ -3,6 +3,10 @@ adapted from https://github.com/balazik/ComfyUI-PuLID-Flux
 
 workflow: see example flux_pulid_multi.json
 
+## oct.7 2025
+Formally discontinued.
+You guys may just use i2i models like flux kontext/qwen image edit, they are just doing same thing or doing better than Pulid.
+
 ## update oct.28 2024
 Add an optional prior image input for the node. When using the train_weight method, the prior image will act as the main id image, which will lead the other id images to sum up to an optimized id embedding.
 
