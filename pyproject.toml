@@ -1,0 +1,15 @@
+[project]
+name = "comfyui-pulid-flux-enhanced"
+description = "adapted from [a/https://github.com/balazik/ComfyUI-PuLID-Flux](https://github.com/balazik/ComfyUI-PuLID-Flux).\ncommon fusion methods for multi-image input, some further experimental fusion methods, switch between using gray image (official) and rgb.,"
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["facexlib", "insightface", "onnxruntime", "onnxruntime-gpu", "ftfy", "timm"]
+
+[project.urls]
+Repository = "https://github.com/sipie800/ComfyUI-PuLID-Flux-Enhanced"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-PuLID-Flux-Enhanced"
+Icon = ""
